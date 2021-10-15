@@ -1,11 +1,12 @@
 import React from 'react'
 
 export default function PostItem(props) {
-  const { id, title, body } = props.post
+  const { id, title, body, number } = props.post
+
   return (
     <div className="post" >
       <div className="post__content">
-        <strong id={id} >{title}</strong>
+        <strong id={id}>{props.number}. {title}</strong>
         <div>
           {body}
         </div>
