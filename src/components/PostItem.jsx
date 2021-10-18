@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function PostItem(props) {
-  const { id, title, body, number } = props.post
+  const { id, title, body } = props.post
 
   return (
     <div className="post" >
@@ -12,7 +12,7 @@ export default function PostItem(props) {
         </div>
       </div>
       <div className="post__btns">
-        <button>Delete</button>
+        <button onClick={() => props.remove(props.post)} >Delete</button>
       </div>
     </div>
   )
