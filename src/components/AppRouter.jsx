@@ -1,26 +1,22 @@
 import React from 'react'
 import { Redirect, Route, Switch } from 'react-router'
-import About from '../pages/About'
-import Error from '../pages/Error'
-import PostIdPage from '../pages/PostIdPage'
-import Posts from '../pages/Posts'
+import { privateRoutes, publicRoutes } from '../router'
 
 export default function AppRouter() {
+  const isAuth = false
   return (
-    <Switch>
-      <Route path="/about">
-        <About />
-      </Route>
-      <Route exact path="/posts">
-        <Posts />
-      </Route>
-      <Route path="/posts/:id">
-        <PostIdPage />
-      </Route>
-      <Route path="/error">
-        <Error />
-      </Route>
-      <Redirect to={'/error'} />
-    </Switch>
+    isAuth ? <Switch>
+      {privateRoutes.map(route =>
+        <Route key={route.path} path={route.path} component={route.component} exact={route.exact} />
+      )}
+      <Redirect to={'/posts'} />
+    </Switch> :
+      <Switch>
+        {publicRoutes.map(route =>
+          <Route path={route.path} component={route.component} exact={route.exact} />
+        )}
+        <Redirect to={'/login'} />
+      </Switch>
+
   )
 }
