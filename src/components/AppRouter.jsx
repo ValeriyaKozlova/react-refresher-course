@@ -1,9 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Redirect, Route, Switch } from 'react-router'
+import { AuthContext } from '../context'
 import { privateRoutes, publicRoutes } from '../router'
+import Loader from './UI/loader/Loader'
 
 export default function AppRouter() {
-  const isAuth = false
+  const { isAuth, isLoading } = useContext(AuthContext)
+
+  if (isLoading) {
+    return <Loader />
+  }
   return (
     isAuth ? <Switch>
       {privateRoutes.map(route =>
@@ -13,7 +19,7 @@ export default function AppRouter() {
     </Switch> :
       <Switch>
         {publicRoutes.map(route =>
-          <Route path={route.path} component={route.component} exact={route.exact} />
+          <Route key={route.path} path={route.path} component={route.component} exact={route.exact} />
         )}
         <Redirect to={'/login'} />
       </Switch>
