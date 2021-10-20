@@ -7,10 +7,11 @@ import PostForm from './components/UI/form/PostForm'
 import Loader from './components/UI/loader/Loader'
 import MyModal from './components/UI/modal/MyModal'
 import { useFetching } from './hooks/useFetching'
-import { getPageCount, getPagesArray } from "./components/utils/pages"
+import { getPageCount } from "./components/utils/pages"
 
 import { usePosts } from './hooks/usePosts'
 import './styles/App.css'
+import Pagination from './components/UI/pagination/Pagination'
 
 function App() {
   const [posts, setPosts] = useState([])
@@ -21,17 +22,15 @@ function App() {
   const [page, setPage] = useState(1)
 
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
-  const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
+  const [fetchPosts, isPostsLoading, postError] = useFetching(async (limit, page) => {
     const response = await PostService.getAll(limit, page);
     setPosts(response.data)
     const totalCount = response.headers['x-total-count']
     setTotalPages(getPageCount(totalCount, limit))
   })
-  let pagesArray = getPagesArray(totalPages)
 
   useEffect(() => {
-    fetchPosts()
-
+    fetchPosts(limit, page)
   }, [])
 
   const createPost = (newPost) => {
@@ -41,6 +40,11 @@ function App() {
 
   const removePost = (post) => {
     setPosts(posts.filter(p => p.id !== post.id))
+  }
+
+  const changePage = (page) => {
+    setPage(page)
+    fetchPosts(limit, page)
   }
 
   return (
@@ -60,19 +64,11 @@ function App() {
         ><Loader /></div>
         : <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Posts list 1" />
       }
-      <div className="page__wrapper">
-        {
-          pagesArray.map(p =>
-            <span
-              className={page === p ? 'page page__current' : 'page'}
-              key={p}
-              onClick={() => setPage(p)}
-            >
-              {p}
-            </span>
-          )
-        }
-      </div>
+      <Pagination
+        page={page}
+        changePage={changePage}
+        totalPages={totalPages}
+      />
     </div>
   );
 }
